@@ -4,14 +4,14 @@
 
 ## Introdução
 
-Antes de iniciar a implementação, optei por pensar primeiro na arquitetura antes de colocar a mão no código. Desconsiderei toda a parte de segurança (autorização, autenticação ou security provider), pois além de não estar descrita como obrigatória, traria mais uma camada de complexidade à solução. Minhas decisões foram tomadas com base nas experiências que adquiri até o momento e no meu contato com arquitetura de sistemas, sempre priorizando a tecnologia que melhor atende à solução, e não apenas as ferramentas com as quais já estou familiarizado. Sei que ainda há muito a aprender e, caso alguma escolha possa ser aprimorada, este é o nível de conhecimento que possuo atualmente. Estou sempre aberto a feedbacks para evolução contínua.
+Antes de iniciar a implementação, optei por pensar primeiro na arquitetura antes de colocar a mão no código. Desconsiderei toda a parte de segurança (autorização, autenticação ou security provider) e multiplos ambientes (variaveis de ambiente para development, staging, production), pois além de não estar descrita como obrigatório, traria mais uma camada de complexidade à solução. Minhas decisões foram tomadas com base nas experiências que adquiri até o momento e no meu contato com arquitetura de sistemas, sempre priorizando a tecnologia que melhor atende à solução, e não apenas as ferramentas com as quais já estou familiarizado. Sei que ainda há muito a aprender e, caso alguma escolha possa ser aprimorada, este é o nível de conhecimento que possuo atualmente. Estou sempre aberto a feedbacks para evolução contínua.
 
 ## 1. Escolha do Banco de Dados
 
 O primeiro passo foi escolher um banco de dados que atendesse aos requisitos de alta performance tanto para escrita quanto para leitura. Como estamos lidando com um alto volume de pedidos diários (150k a 200k), a escolha do banco deveria considerar:
 
 - **Alta performance na escrita:** O banco precisa suportar uma grande quantidade de inserções sem comprometer o desempenho.
-- **Alta performance na leitura:** Como poderemos precisar consultar pedidos por cliente, considerei essa necessidade ao definir a estratégia de leitura.
+- **Alta performance na leitura:** Como poderemos precisar consultar pedidos por identificador, considerei essa necessidade ao definir a estratégia de leitura.
 - **Escalabilidade:** O banco precisa suportar crescimento sem perda de performance.
 
 Dado esse cenário, a escolha foi por **bancos NoSQL**, que permitem maior flexibilidade e escalabilidade. Dentre as opções analisadas:
@@ -44,7 +44,7 @@ A opção em nuvem oferece maior escalabilidade e menor esforço operacional, po
 
 Embora eu não tenha muita experiência com essa etapa, sei da importância do cache devido ao alto volume de dados. Dessa forma, adotei essa estratégia para otimizar a leitura e reduzir a carga sobre o banco de dados.
 
-Como os modelos de consulta não foram especificados, assumi que a principal consulta seria por cliente. Com isso, implementei a estratégia de cache para armazenar os pedidos já consultados, reduzindo a necessidade de acesso ao banco.
+Como os modelos de consulta não foram especificados, assumi que a principal consulta seria por identificador. Com isso, implementei a estratégia de cache para armazenar os pedidos já consultados, reduzindo a necessidade de acesso ao banco.
 
 A ideia seria:
 1. Ao buscar um pedido pela primeira vez, armazená-lo no cache.

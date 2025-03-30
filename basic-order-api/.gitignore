@@ -1,0 +1,5 @@
+/target/classes/com/api/basicorder/application/OrderService.class
+/target/classes/com/api/basicorder/core/adapters/out/DynamoItemRepository.class
+/target/classes/com/api/basicorder/core/adapters/out/DynamoOrderRepository.class
+/target/classes/com/api/basicorder/core/domain/Item.class
+/target/classes/com/api/basicorder/core/ports/order/OrderOutputPort.class
