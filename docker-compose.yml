@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack
+    environment:
+      - SERVICES=dynamodb,sqs,sns
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=us-east-1
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "basicorder_data:/var/lib/localstack"
+
+  terraform:
+    image: hashicorp/terraform:latest
+    container_name: terraform
+    working_dir: /app
+    depends_on:
+      - localstack
+    volumes:
+      - ./run/terraform:/app
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=us-east-1
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        terraform init
+        terraform apply -auto-approve
+
+volumes:
+  basicorder_data:

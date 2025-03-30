@@ -21,7 +21,7 @@ import java.util.Map;
 @Configuration
 public class DynamoConfig {
 
-    private final String DYNAMO_ENDPOINT = "http://localhost:4566";
+    private final String ENDPOINT = "http://localhost:4566";
     private final String REGION = "us-east-1";
 
     @Bean
@@ -30,18 +30,18 @@ public class DynamoConfig {
 
         try {
             DynamoDbClient dynamoDbClient = DynamoDbClient.builder()
-                    .endpointOverride(URI.create(DYNAMO_ENDPOINT))
+                    .endpointOverride(URI.create(ENDPOINT))
                     .region(Region.of(REGION))
                     .credentialsProvider(StaticCredentialsProvider.create(
-                            AwsBasicCredentials.create("mockAccessKey", "mockSecretKey")
+                            AwsBasicCredentials.create("test", "test")
                     ))
                     .build();
 
             if (dynamoDbClient.listTables().tableNames().isEmpty()) {
                 log.info("Running migrations...");
 
-                createTableOrder(dynamoDbClient);
-                createTableItem(dynamoDbClient);
+//                createTableOrder(dynamoDbClient);
+//                createTableItem(dynamoDbClient);
                 insertItems(dynamoDbClient);
 
                 log.info("Finished migrations");
@@ -95,9 +95,9 @@ public class DynamoConfig {
     private void insertItems(DynamoDbClient dynamoDbClient) {
         List<Item> items = new ArrayList<>();
 
-        items.add(new Item("Pen", 1.5));
-        items.add(new Item("Pencil", 1.0));
-        items.add(new Item("Eraser", 0.5));
+        items.add(new Item("uuid-pen", "Pen", 1.5));
+        items.add(new Item("uuid-pencil", "Pencil", 1.0));
+        items.add(new Item("uuid-eraser", "Eraser", 0.5));
 
         for (Item item : items) {
             Map<String, AttributeValue> itemMap = new HashMap<>();
@@ -115,7 +115,6 @@ public class DynamoConfig {
         }
 
         log.info("Insert items");
-        dynamoDbClient.close();
     }
 
     private static void createTable(DynamoDbClient dynamoDbClient, CreateTableRequest request) {
