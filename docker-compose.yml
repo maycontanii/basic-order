@@ -34,5 +34,38 @@ services:
         terraform init
         terraform apply -auto-approve
 
+  basic_order_producer:
+    build:
+      context: ./basic-order-producer
+      dockerfile: Dockerfile
+    container_name: basic_order_producer
+    depends_on:
+      terraform:
+        condition: service_completed_successfully
+    ports:
+      - "8081:8081"
+
+  basic_order_api:
+    build:
+      context: ./basic-order-api
+      dockerfile: Dockerfile
+    container_name: basic_order_api
+    depends_on:
+      terraform:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+
+  basic_order_receiver:
+    build:
+      context: ./basic-order-receiver
+      dockerfile: Dockerfile
+    container_name: basic_order_receiver
+    depends_on:
+      terraform:
+        condition: service_completed_successfully
+    ports:
+      - "8082:8082"
+
 volumes:
   basicorder_data:

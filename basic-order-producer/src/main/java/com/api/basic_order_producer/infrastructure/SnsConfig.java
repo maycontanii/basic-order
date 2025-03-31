@@ -14,7 +14,8 @@ import java.net.URI;
 @Configuration
 public class SnsConfig {
 
-    private final String ENDPOINT = "http://localhost:4566";
+    private final String ENDPOINT = "http://localstack:4566";
+//    private final String ENDPOINT = "http://localhost:4566"; -- rodar local
     private final String REGION = "us-east-1";
 
     @Bean
