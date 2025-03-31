@@ -1,10 +1,14 @@
 # API Basic Order
 
 <img src="files/teste_tecnico.png" alt="desafio">
+<img src="files/img.png.png" alt="arq">
 
 ## Introdução
 
 Antes de iniciar a implementação, optei por pensar primeiro na arquitetura antes de colocar a mão no código. Desconsiderei toda a parte de segurança (autorização, autenticação ou security provider) e multiplos ambientes (variaveis de ambiente para development, staging, production), pois além de não estar descrita como obrigatório, traria mais uma camada de complexidade à solução. Minhas decisões foram tomadas com base nas experiências que adquiri até o momento e no meu contato com arquitetura de sistemas, sempre priorizando a tecnologia que melhor atende à solução, e não apenas as ferramentas com as quais já estou familiarizado. Sei que ainda há muito a aprender e, caso alguma escolha possa ser aprimorada, este é o nível de conhecimento que possuo atualmente. Estou sempre aberto a feedbacks para evolução contínua.
+
+## Execute o projeto
+Para executar o projeto, [clique aqui](./EXECUTE.md).
 
 ## 1. Escolha do Banco de Dados
 
@@ -40,19 +44,26 @@ Essa opção traz maior controle sobre custos, mas exige maior esforço operacio
 
 A opção em nuvem oferece maior escalabilidade e menor esforço operacional, porém com um custo maior.
 
-## 3. Estratégia de Otimização de Leitura com Cache
+[//]: # (## 3. Estratégia de Otimização de Leitura com Cache)
 
-Embora eu não tenha muita experiência com essa etapa, sei da importância do cache devido ao alto volume de dados. Dessa forma, adotei essa estratégia para otimizar a leitura e reduzir a carga sobre o banco de dados.
+[//]: # ()
+[//]: # (Embora eu não tenha muita experiência com essa etapa, sei da importância do cache devido ao alto volume de dados. Dessa forma, adotei essa estratégia para otimizar a leitura e reduzir a carga sobre o banco de dados.)
 
-Como os modelos de consulta não foram especificados, assumi que a principal consulta seria por identificador. Com isso, implementei a estratégia de cache para armazenar os pedidos já consultados, reduzindo a necessidade de acesso ao banco.
+[//]: # ()
+[//]: # (Como os modelos de consulta não foram especificados, assumi que a principal consulta seria por identificador. Com isso, implementei a estratégia de cache para armazenar os pedidos já consultados, reduzindo a necessidade de acesso ao banco.)
 
-A ideia seria:
-1. Ao buscar um pedido pela primeira vez, armazená-lo no cache.
-2. Se o mesmo pedido for consultado novamente, ele será recuperado diretamente do cache.
-3. Caso alguma informação do pedido seja alterada, o cache deve ser atualizado.
-4. O cache teria um tempo de expiração para evitar informações desatualizadas.
+[//]: # ()
+[//]: # (A ideia seria:)
 
-## 4. Escolha Final: Stack Cloud
+[//]: # (1. Ao buscar um pedido pela primeira vez, armazená-lo no cache.)
+
+[//]: # (2. Se o mesmo pedido for consultado novamente, ele será recuperado diretamente do cache.)
+
+[//]: # (3. Caso alguma informação do pedido seja alterada, o cache deve ser atualizado.)
+
+[//]: # (4. O cache teria um tempo de expiração para evitar informações desatualizadas.)
+
+## 3. Escolha Final: Stack Cloud
 
 Decidi seguir com a **Stack Cloud** para demonstrar meu conhecimento em integração com AWS. Além disso, essa abordagem permite maior escalabilidade, menos esforço operacional e maior resiliência para lidar com o alto volume de pedidos.
 
