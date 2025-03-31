@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @AllArgsConstructor
-public class DynamoItemRepository implements ItemOutputPort {
+public class ItemRepository implements ItemOutputPort {
 
     private final DynamoDbEnhancedClient dynamoDbEnhancedClient;
 

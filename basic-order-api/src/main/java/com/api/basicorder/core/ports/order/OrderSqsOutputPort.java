@@ -6,11 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Optional;
 
-public interface OrderOutputPort {
-
-    String save(OrderEntity order);
-
-    Optional<Order> findById(String id) throws JsonProcessingException;
+public interface OrderSqsOutputPort {
 
     void postOnSqsQueue(String queueName, String order);
 }

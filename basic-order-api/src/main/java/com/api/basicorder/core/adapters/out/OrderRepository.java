@@ -10,15 +10,21 @@ import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
+import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
+import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
-public class DynamoOrderRepository implements OrderOutputPort {
+public class OrderRepository implements OrderOutputPort {
 
     private final DynamoDbEnhancedClient dynamoDbEnhancedClient;
+    private final SqsClient sqsClient;
 
     private DynamoDbTable<OrderEntity> getDynamoDbTable() {
         return dynamoDbEnhancedClient.table("Order", TableSchema.fromBean(OrderEntity.class));
@@ -38,4 +44,24 @@ public class DynamoOrderRepository implements OrderOutputPort {
 
         return Optional.of(OrderMapper.toDomain(orderEntity));
     }
+
+    @Override
+    public void postOnSqsQueue(String queueName, String order) {
+        sqsClient.sendMessage(SendMessageRequest.builder()
+                .messageBody(order)
+                .queueUrl(getQueueUrlByName(queueName))
+                .build());
+    }
+
+    private String getQueueUrlByName(String queueName) {
+        try {
+            return sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
+                            .queueName(queueName)
+                            .build())
+                    .queueUrl();
+        } catch (QueueDoesNotExistException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

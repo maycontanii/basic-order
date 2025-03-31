@@ -1,9 +1,5 @@
-package com.api.basicorder.core.adapters.in;
+package com.api.basic_order_receiver.adapter;
 
-import com.api.basicorder.core.adapters.in.dto.SaveOrderInput;
-import com.api.basicorder.core.ports.order.OrderInputPort;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +17,13 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderQueueController {
 
-    private final OrderInputPort orderInputPort;
     private final SqsClient sqsClient;
-    private final ObjectMapper objectMapper;
 
     @PostConstruct
     public void listenForMessages() {
         new Thread(() -> {
             String queueUrl = sqsClient.getQueueUrl(GetQueueUrlRequest.builder()
-                            .queueName("order_processor_queue")
+                            .queueName("order_processed_queue")
                             .build())
                     .queueUrl();
 
@@ -43,19 +37,12 @@ public class OrderQueueController {
                 List<Message> messages = sqsClient.receiveMessage(receiveMessageRequest).messages();
 
                 for (Message message : messages) {
-                    try {
-                        String jsonOrder = objectMapper.readTree(message.body()).get("Message").asText();
-                        SaveOrderInput saveOrderInput = objectMapper.readValue(jsonOrder, SaveOrderInput.class);
-                        String orderProcessId = orderInputPort.saveOrder(saveOrderInput);
-                        log.info("Order processed: " + orderProcessId);
+                    log.info("Order received: " + message.body());
 
-                        sqsClient.deleteMessage(DeleteMessageRequest.builder()
-                                .queueUrl(queueUrl)
-                                .receiptHandle(message.receiptHandle())
-                                .build());
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
+                    sqsClient.deleteMessage(DeleteMessageRequest.builder()
+                            .queueUrl(queueUrl)
+                            .receiptHandle(message.receiptHandle())
+                            .build());
                 }
             }
         }).start();

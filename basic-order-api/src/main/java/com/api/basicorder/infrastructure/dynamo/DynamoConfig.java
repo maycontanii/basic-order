@@ -40,8 +40,8 @@ public class DynamoConfig {
             if (dynamoDbClient.listTables().tableNames().isEmpty()) {
                 log.info("Running migrations...");
 
-//                createTableOrder(dynamoDbClient);
-//                createTableItem(dynamoDbClient);
+                createTableOrder(dynamoDbClient);
+                createTableItem(dynamoDbClient);
                 insertItems(dynamoDbClient);
 
                 log.info("Finished migrations");

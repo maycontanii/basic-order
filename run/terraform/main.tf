@@ -27,18 +27,22 @@ resource "aws_sns_topic" "order_topic" {
   name = "order_topic"
 }
 
-resource "aws_sqs_queue" "order_process_queue" {
-  name = "order_process_queue"
+resource "aws_sqs_queue" "order_processor_queue" {
+  name = "order_processor_queue"
+}
+
+resource "aws_sqs_queue" "order_processed_queue" {
+  name = "order_processed_queue"
 }
 
 resource "aws_sns_topic_subscription" "sqs_subscription" {
   topic_arn = aws_sns_topic.order_topic.arn
   protocol  = "sqs"
-  endpoint  = aws_sqs_queue.order_process_queue.arn
+  endpoint  = aws_sqs_queue.order_processor_queue.arn
 }
 
 resource "aws_sqs_queue_policy" "sqs_policy" {
-  queue_url = aws_sqs_queue.order_process_queue.id
+  queue_url = aws_sqs_queue.order_processor_queue.id
   policy    = <<EOF
 {
   "Version": "2012-10-17",
@@ -47,12 +51,29 @@ resource "aws_sqs_queue_policy" "sqs_policy" {
       "Effect": "Allow",
       "Principal": "*",
       "Action": "SQS:SendMessage",
-      "Resource": "${aws_sqs_queue.order_process_queue.arn}",
+      "Resource": "${aws_sqs_queue.order_processor_queue.arn}",
       "Condition": {
         "ArnEquals": {
           "aws:SourceArn": "${aws_sns_topic.order_topic.arn}"
         }
       }
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_sqs_queue_policy" "order_processed_queue_policy" {
+  queue_url = aws_sqs_queue.order_processed_queue.id
+  policy    = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "SQS:SendMessage",
+      "Resource": "${aws_sqs_queue.order_processed_queue.arn}"
     }
   ]
 }

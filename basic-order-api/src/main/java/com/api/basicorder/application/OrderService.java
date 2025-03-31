@@ -7,6 +7,7 @@ import com.api.basicorder.core.ports.item.ItemOutputPort;
 import com.api.basicorder.core.ports.order.OrderInputPort;
 import com.api.basicorder.core.ports.order.OrderOutputPort;
 import com.api.basicorder.infrastructure.dynamo.mapper.OrderMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class OrderService implements OrderInputPort {
 
     private final OrderOutputPort orderOutputPort;
     private final ItemOutputPort itemOutputPort;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Order getOrder(String id) {
@@ -40,7 +42,13 @@ public class OrderService implements OrderInputPort {
                 itemsOrder.add(itemOrder);
             });
 
-            return orderOutputPort.save(OrderMapper.toEntity(new Order(calculateTotalPeerOrder(itemsOrder), itemsOrder)));
+            Order order = new Order(calculateTotalPeerOrder(itemsOrder), itemsOrder);
+
+            String orderPersistedId = orderOutputPort.save(OrderMapper.toEntity(order));
+
+            orderOutputPort.postOnSqsQueue("order_processed_queue", objectMapper.writeValueAsString(order));
+
+            return orderPersistedId;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
