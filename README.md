@@ -1,7 +1,7 @@
 # API Basic Order
 
 <img src="files/teste_tecnico.png" alt="desafio">
-<img src="files/img.png.png" alt="arq">
+<img src="files/img.png" alt="arq">
 
 ## Introdução
 
